@@ -1,0 +1,34 @@
+[tool.poetry]
+name = "ar-kan-timeseries"
+version = "0.1.0"
+description = "AR-KAN for time series: AR memory + KAN nonlinearity, grid search, STL periodicity, Rdatasets loader."
+authors = ["Diogo Ribeiro <dfr@esmad.ipp.pt>"]
+license = "MIT"
+readme = "README.md"
+packages = [{ include = "arkan_ts", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.10,<3.13"
+numpy = "^2.0.0"
+torch = "^2.2.0"
+tqdm = "^4.66.0"
+statsmodels = "^0.14.0"
+pandas = "^2.2.0"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.10.0"
+ruff = "^0.6.0"
+pytest = "^8.0.0"
+types-tqdm = "^4.66.0.20240417"
+types-requests = "^2.32.0.20240914"
+
+[tool.poetry.scripts]
+arkan = "arkan_ts.__main__:main"
+
+[build-system]
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "B", "UP"]
