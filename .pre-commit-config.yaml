@@ -1,0 +1,88 @@
+# Run `poetry run pre-commit install --hook-type pre-commit --hook-type pre-push`
+# Then: `poetry run pre-commit run -a` (first time or on CI)
+
+repos:
+  # Basic hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+      - id: check-toml
+      - id: check-json
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: detect-private-key
+
+  # Ruff (lint & fixes)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+
+  # Black (formatter)
+  - repo: https://github.com/psf/black
+    rev: 24.8.0
+    hooks:
+      - id: black
+        language_version: python3.10
+
+  # isort (imports) — keep in sync with black line-length/profile
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (imports)
+        args: ["--profile=black", "--line-length=100"]
+
+  # Docstring style (Google convention)
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+      - id: pydocstyle
+        args: ["--convention=google"]
+        additional_dependencies: []
+
+  # mypy (type checking) — uses your pyproject config
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.10.0
+    hooks:
+      - id: mypy
+        args: ["--config-file=pyproject.toml"]
+        additional_dependencies:
+          - types-requests
+          - types-tqdm
+          - types-setuptools
+
+  # Bandit (security)
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.9
+    hooks:
+      - id: bandit
+        args: ["-q", "-r", "src"]
+        files: ^src/
+
+  # Run tests only on pre-push to keep commits speedy
+  - repo: local
+    hooks:
+      - id: pytest
+        name: pytest (quick)
+        entry: poetry run pytest -q
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+# Global excludes to speed up hooks
+exclude: >
+  (?x)^(
+    dist/|
+    build/|
+    docs/_build/|
+    \.venv/|venv/|env/|
+    \.mypy_cache/|
+    \.ruff_cache/|
+    \.pytest_cache/|
+    .*\.egg-info/
+  )

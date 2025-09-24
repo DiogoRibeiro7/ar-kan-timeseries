@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Optional, Tuple
+
 import numpy as np
 
 
@@ -18,8 +19,7 @@ def _check_array_1d(x: np.ndarray, name: str) -> None:
 
 
 def autocovariance(x: np.ndarray, lag: int) -> float:
-    """
-    Unbiased sample autocovariance at a given nonnegative lag.
+    """Unbiased sample autocovariance at a given nonnegative lag.
 
     Parameters
     ----------
@@ -28,7 +28,7 @@ def autocovariance(x: np.ndarray, lag: int) -> float:
     lag : int
         Nonnegative lag.
 
-    Returns
+    Returns:
     -------
     float
         Unbiased autocovariance at `lag`.
@@ -43,9 +43,8 @@ def autocovariance(x: np.ndarray, lag: int) -> float:
     return float(np.dot(x_centered[lag:], x_centered[:-lag]) / (n - lag - 1))
 
 
-def yule_walker_ar(x: np.ndarray, p: int) -> Tuple[np.ndarray, float]:
-    """
-    Estimate AR(p) coefficients via Yule–Walker using Levinson–Durbin recursion.
+def yule_walker_ar(x: np.ndarray, p: int) -> tuple[np.ndarray, float]:
+    """Estimate AR(p) coefficients via Yule–Walker using Levinson–Durbin recursion.
 
     We use the sign convention: x_t ≈ sum_{i=1..p} a[i-1] * x_{t-i}
 
@@ -56,14 +55,14 @@ def yule_walker_ar(x: np.ndarray, p: int) -> Tuple[np.ndarray, float]:
     p : int
         AR order (1 <= p < len(x)/5 recommended).
 
-    Returns
+    Returns:
     -------
     a : np.ndarray
         Coefficients a[0..p-1].
     noise_var : float
         Final prediction error variance from the recursion.
 
-    Raises
+    Raises:
     ------
     ValueError, RuntimeError
         If inputs are invalid or recursion fails.
@@ -104,8 +103,7 @@ class ARMemoryConfig:
 
 
 class ARMemory:
-    """
-    Data-driven AR(p) memory: pretrains coefficients then emits AR-weighted lags.
+    """Data-driven AR(p) memory: pretrains coefficients then emits AR-weighted lags.
 
     For a 1D series x and fitted coeffs a[0..p-1], the feature at time t is:
         z_t[i] = a[i] * x_{t-i}
@@ -118,9 +116,9 @@ class ARMemory:
         if not isinstance(cfg.p, int) or cfg.p <= 0:
             raise ValueError("AR order p must be a positive integer.")
         self.cfg = cfg
-        self._mean: Optional[float] = None
-        self._std: Optional[float] = None
-        self._a: Optional[np.ndarray] = None
+        self._mean: float | None = None
+        self._std: float | None = None
+        self._a: np.ndarray | None = None
 
     @property
     def coefficients(self) -> np.ndarray:
@@ -129,7 +127,7 @@ class ARMemory:
             raise RuntimeError("ARMemory not fitted yet.")
         return self._a
 
-    def fit(self, x: np.ndarray) -> "ARMemory":
+    def fit(self, x: np.ndarray) -> ARMemory:
         """Fit AR(p) to `x` and cache standardization stats if enabled."""
         _check_array_1d(x, "x")
         x_ = x.astype(float).copy()
@@ -143,8 +141,7 @@ class ARMemory:
         return self
 
     def transform(self, x: np.ndarray) -> np.ndarray:
-        """
-        Build AR-weighted lag matrix Z of shape (T - p, p), aligned for 1-step ahead.
+        """Build AR-weighted lag matrix Z of shape (T - p, p), aligned for 1-step ahead.
 
         Z[t, i] = a[i] * x_{t + p - 1 - i},   with t = 0..T-p-1
         """
@@ -158,7 +155,7 @@ class ARMemory:
             x_ = (x_ - self._mean) / self._std
         T = x_.shape[0]
         p = self.cfg.p
-        if T <= p:
+        if p >= T:
             raise ValueError("Series too short for the chosen AR order.")
         L = np.zeros((T - p, p), dtype=float)
         for i in range(p):
@@ -171,6 +168,6 @@ class ARMemory:
         _check_array_1d(x, "x")
         T = x.shape[0]
         p = self.cfg.p
-        if T <= p:
+        if p >= T:
             raise ValueError("Series too short for the chosen AR order.")
         return x[p:]

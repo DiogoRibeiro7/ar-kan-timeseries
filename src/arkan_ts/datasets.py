@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Tuple, Dict, Any
+from typing import Any, Dict, Optional, Tuple
+
 import numpy as np
 import pandas as pd
 from statsmodels.tsa.seasonal import STL
@@ -14,16 +15,16 @@ BASE = "https://vincentarelbundock.github.io/Rdatasets/csv"
 @dataclass
 class TimeSeriesWithMeta:
     """Container for a standardized univariate series and metadata."""
+
     name: str
     values: np.ndarray
-    frequency: Optional[int]
+    frequency: int | None
     periodicity_strength: float
-    meta: Dict[str, Any]
+    meta: dict[str, Any]
 
 
-def _infer_period_via_acf(x: np.ndarray, nlags: int = 400) -> Optional[int]:
-    """
-    Choose a seasonal period as the lag of the largest ACF peak (lag > 0).
+def _infer_period_via_acf(x: np.ndarray, nlags: int = 400) -> int | None:
+    """Choose a seasonal period as the lag of the largest ACF peak (lag > 0).
     Returns None if no meaningful peak is found.
     """
     if x.ndim != 1:
@@ -38,9 +39,8 @@ def _infer_period_via_acf(x: np.ndarray, nlags: int = 400) -> Optional[int]:
     return k if vals.max() > 0.15 else None
 
 
-def _periodicity_strength(x: np.ndarray, period: Optional[int]) -> float:
-    """
-    Periodicity Strength = ||seasonal||^2 / ||x||^2 after STL decomposition.
+def _periodicity_strength(x: np.ndarray, period: int | None) -> float:
+    """Periodicity Strength = ||seasonal||^2 / ||x||^2 after STL decomposition.
     If no period is detected, returns 0.
     """
     if x.ndim != 1:
@@ -51,17 +51,16 @@ def _periodicity_strength(x: np.ndarray, period: Optional[int]) -> float:
     try:
         stl = STL(x, period=period, robust=True)
         res = stl.fit()
-        num = float(np.sum(res.seasonal ** 2))
-        den = float(np.sum(x ** 2) + 1e-12)
+        num = float(np.sum(res.seasonal**2))
+        den = float(np.sum(x**2) + 1e-12)
         return max(0.0, min(1.0, num / den))
     except Exception:
         # Robust to STL failures on short/noisy series
         return 0.0
 
 
-def load_rdataset(package: str, item: str, value_col: Optional[str] = None) -> TimeSeriesWithMeta:
-    """
-    Load a univariate time series from Rdatasets (CSV endpoint).
+def load_rdataset(package: str, item: str, value_col: str | None = None) -> TimeSeriesWithMeta:
+    """Load a univariate time series from Rdatasets (CSV endpoint).
     Many datasets are rectangular; pick a numeric column via `value_col`.
     If omitted, we take the last numeric column by heuristic.
 
@@ -85,4 +84,6 @@ def load_rdataset(package: str, item: str, value_col: Optional[str] = None) -> T
     period = _infer_period_via_acf(x_std)
     ps = _periodicity_strength(x_std, period)
     meta = {"package": package, "item": item, "value_col": value_col, "rows": len(x)}
-    return TimeSeriesWithMeta(name=f"{item}_ts", values=x_std, frequency=period, periodicity_strength=ps, meta=meta)
+    return TimeSeriesWithMeta(
+        name=f"{item}_ts", values=x_std, frequency=period, periodicity_strength=ps, meta=meta
+    )
