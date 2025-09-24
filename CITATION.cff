@@ -1,0 +1,54 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "AR-KAN Time Series: AR Memory + KAN Nonlinearity in Python"
+type: software
+version: "0.1.0"
+authors:
+  - family-names: Ribeiro
+    given-names: Diogo
+    orcid: "https://orcid.org/0009-0001-2022-7072"
+    email: dfr@esmad.ipp.pt
+    affiliation: "ESMAD; Mysense.ai"
+repository-code: "https://github.com/diogoribeiro7/ar-kan-timeseries"
+url: "https://github.com/diogoribeiro7/ar-kan-timeseries"
+license: MIT
+keywords:
+  - time series
+  - forecasting
+  - AR
+  - ARIMA
+  - KAN
+  - STL
+  - B-spline
+abstract: >
+  AR-KAN for time series in Python: an autoregressive (AR) memory learned from data,
+  feeding a KAN-style nonlinear stage (RBF or cubic B-spline basis), with grid search
+  for ARIMA/ARKAN, STL-based periodicity strength, and Rdatasets loader.
+
+preferred-citation:
+  type: software
+  title: "AR-KAN Time Series: AR Memory + KAN Nonlinearity in Python"
+  version: "0.1.0"
+  year: 2025
+  url: "https://github.com/diogoribeiro7/ar-kan-timeseries"
+  authors:
+    - family-names: Ribeiro
+      given-names: Diogo
+      orcid: "https://orcid.org/0009-0001-2022-7072"
+      email: dfr@esmad.ipp.pt
+      affiliation: "ESMAD; Mysense.ai"
+
+references:
+  - type: article
+    title: "AR-KAN: Autoregressive-Weight-Enhanced Kolmogorov–Arnold Network for Time Series Forecasting"
+    authors:
+      - family-names: Zeng
+        given-names: Chen
+      - family-names: Xu
+        given-names: Tiehang
+      - family-names: Wang
+        given-names: Qiao
+    year: 2025
+    journal: arXiv
+    notes: "arXiv:2509.02967v2"
+    url: "https://arxiv.org/abs/2509.02967"
