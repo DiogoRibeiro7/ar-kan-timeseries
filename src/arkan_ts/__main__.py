@@ -2,10 +2,16 @@ from __future__ import annotations
 
 import argparse
 import math
+
 import numpy as np
 import torch
 
-from .grid_search import default_arima_grid, default_arkan_grid, grid_search_arima, grid_search_arkan
+from .grid_search import (
+    default_arima_grid,
+    default_arkan_grid,
+    grid_search_arima,
+    grid_search_arkan,
+)
 from .memory import ARMemory, ARMemoryConfig
 from .model import ARKAN
 from .train import SupervisedTS, train_arkan
@@ -47,7 +53,7 @@ def main() -> None:
         Ntr = int(0.8 * N)
         mem = ARMemory(ARMemoryConfig(p=int(args.p), standardize=True)).fit(x[:Ntr])
         Ztr, ytr = mem.transform(x[:Ntr]), mem.target(x[:Ntr])
-        Zte, yte = mem.transform(x)[Ntr - args.p:], x[args.p:][Ntr - args.p:]
+        Zte, yte = mem.transform(x)[Ntr - args.p :], x[args.p :][Ntr - args.p :]
 
         ds_tr = SupervisedTS(Ztr, ytr)
         ds_te = SupervisedTS(Zte, yte)
@@ -70,8 +76,9 @@ def main() -> None:
         x = _make_f1(t, sigma=0.2, rng=rng)
 
         best_a, mse_a, _ = grid_search_arima(x, default_arima_grid())
-        best_k, mse_k, _ = grid_search_arkan(x, default_arkan_grid(basis=args.basis),
-                                             epochs=int(args.epochs), device=args.device)
+        best_k, mse_k, _ = grid_search_arkan(
+            x, default_arkan_grid(basis=args.basis), epochs=int(args.epochs), device=args.device
+        )
         print("Best ARIMA:", best_a, "MSE=", mse_a)
         print(f"Best AR-KAN ({args.basis}):", best_k, "MSE=", mse_k)
 

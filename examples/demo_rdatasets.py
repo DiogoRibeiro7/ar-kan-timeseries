@@ -10,9 +10,11 @@ from arkan_ts.grid_search import (
 
 
 def main() -> None:
-    for (pkg, item) in [("fma", "a10"), ("datasets", "discoveries")]:
+    for pkg, item in [("fma", "a10"), ("datasets", "discoveries")]:
         ts = load_rdataset(pkg, item)  # standardized
-        print(f"{ts.name}: period={ts.frequency}, PeriodicityStrength={100*ts.periodicity_strength:.2f}%")
+        print(
+            f"{ts.name}: period={ts.frequency}, PeriodicityStrength={100*ts.periodicity_strength:.2f}%"
+        )
 
         best_a, mse_a, _ = grid_search_arima(ts.values, default_arima_grid())
         best_k, mse_k, _ = grid_search_arkan(ts.values, default_arkan_grid(basis="bspline"))

@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from typing import Tuple, List
+from typing import List, Tuple
+
 import torch
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader, Dataset
 
 
 class SupervisedTS(Dataset):
-    """
-    Thin dataset wrapper for (features, targets).
-    """
+    """Thin dataset wrapper for (features, targets)."""
 
     def __init__(self, X, y) -> None:
         import numpy as np
@@ -46,16 +45,14 @@ def train_arkan(
     epochs: int = 200,
     lr: float = 3e-3,
     device: str = "cpu",
-) -> Tuple[List[float], List[float]]:
-    """
-    Standard MSE training loop with Adam. Returns train/test MSE histories.
-    """
+) -> tuple[list[float], list[float]]:
+    """Standard MSE training loop with Adam. Returns train/test MSE histories."""
     mse = nn.MSELoss()
     opt = torch.optim.Adam(model.parameters(), lr=lr)
     model.to(device)
 
-    train_hist: List[float] = []
-    test_hist: List[float] = []
+    train_hist: list[float] = []
+    test_hist: list[float] = []
 
     for _ in range(int(epochs)):
         # Train

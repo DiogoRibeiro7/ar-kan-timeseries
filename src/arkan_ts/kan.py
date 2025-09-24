@@ -1,14 +1,15 @@
 from __future__ import annotations
 
 from typing import List
+
 import torch
 from torch import nn
-from .basis import UnivariateRBFSpline, UnivariateBSpline
+
+from .basis import UnivariateBSpline, UnivariateRBFSpline
 
 
 class KANBlock(nn.Module):
-    """
-    KAN-like layer: apply a learnable univariate basis per input dimension,
+    """KAN-like layer: apply a learnable univariate basis per input dimension,
     then linearly mix all features to the output dimension.
 
     Parameters
@@ -39,22 +40,21 @@ class KANBlock(nn.Module):
         self.mix = nn.Linear(in_dim * n_basis, out_dim)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        """
-        Parameters
+        """Parameters
         ----------
         x : torch.Tensor
             Shape (B, in_dim).
 
-        Returns
+        Returns:
         -------
         torch.Tensor
             Shape (B, out_dim).
         """
         if x.ndim != 2 or x.shape[1] != self.in_dim:
             raise ValueError(f"Expected (B,{self.in_dim}), got {tuple(x.shape)}")
-        feats: List[torch.Tensor] = []
+        feats: list[torch.Tensor] = []
         for i in range(self.in_dim):
             phi_i = self.splines[i](x[:, i])  # (B, n_basis)
             feats.append(phi_i)
-        H = torch.cat(feats, dim=1)           # (B, in_dim * n_basis)
+        H = torch.cat(feats, dim=1)  # (B, in_dim * n_basis)
         return self.mix(H)

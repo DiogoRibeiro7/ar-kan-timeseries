@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import torch
 from torch import nn
+
 from .kan import KANBlock
 
 
 class ARKAN(nn.Module):
-    """
-    Full AR-KAN: AR memory (external) feeds a static KAN-style nonlinear map.
+    """Full AR-KAN: AR memory (external) feeds a static KAN-style nonlinear map.
     For 1-step-ahead forecasting, out_dim=1.
     """
 
@@ -25,13 +25,12 @@ class ARKAN(nn.Module):
         self.kan2 = KANBlock(in_dim=hidden, out_dim=1, n_basis=max(4, n_basis // 2), basis=basis)
 
     def forward(self, z: torch.Tensor) -> torch.Tensor:
-        """
-        Parameters
+        """Parameters
         ----------
         z : torch.Tensor
             AR-weighted lags (B, p)
 
-        Returns
+        Returns:
         -------
         torch.Tensor
             Predicted next value (B,)

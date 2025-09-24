@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+
 import numpy as np
 import torch
 from torch.utils.data import DataLoader
@@ -28,7 +29,7 @@ def run_one(series: np.ndarray, p: int = 20, epochs: int = 300, basis: str = "rb
     Ztr, ytr = mem.transform(train), mem.target(train)
 
     Zall = mem.transform(series)
-    Zte, yte = Zall[Ntr - p:], series[p:][Ntr - p:]
+    Zte, yte = Zall[Ntr - p :], series[p:][Ntr - p :]
 
     ds_tr = SupervisedTS(Ztr, ytr)
     ds_te = SupervisedTS(Zte, yte)
