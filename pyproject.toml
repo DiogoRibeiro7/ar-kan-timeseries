@@ -61,7 +61,7 @@ sphinx-autobuild = "^2024.10.3"
 sphinx-copybutton = "^0.5.2"
 sphinx-github-changelog = "^1.2.0"
 sphinx-issues = "^5.0.1"
-sphinxext-opengraph = "^0.8.2"
+sphinxext-opengraph = "^0.13.0"
 
 [tool.poetry.scripts]
 arkan = "arkan_ts.__main__:main"
