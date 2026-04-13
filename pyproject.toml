@@ -26,7 +26,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = ">=3.10"
 numpy = "^2.0.0"
-torch = "^2.2.0"
+torch = "^2.7.1"
 tqdm = "^4.66.0"
 statsmodels = "^0.14.0"
 pandas = "^2.2.0"
